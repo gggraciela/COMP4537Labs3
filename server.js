@@ -1,62 +1,59 @@
-const http = require('http');
-const url = require('url');
-const fs = require('fs');
-const utils = require('./modules/utils');
-const messages = require('./lang/en/en');
+const http = require("http");
+const url = require("url");
+const getDate = require("./modules/utils.js"); // Import the getDate function
+const messages = require("./lang/en/en.js"); // Import user-facing messages
 
-const PORT = 3000;
-const HOST = '0.0.0.0';
+const PORT = process.env.PORT || 3000; // Use Render's assigned port
 
 const server = http.createServer((req, res) => {
     const parsedUrl = url.parse(req.url, true);
+    const pathname = parsedUrl.pathname;
+    const query = parsedUrl.query;
 
-    // Part B: Handle GET request to return a greeting with server date and time
-    if (parsedUrl.pathname === '/COMP4537/labs/3/getDate/') {
-        const name = parsedUrl.query.name || "Guest";
-        const serverTime = utils.getDate();
-        const message = messages.greeting.replace("%1", name).replace("%2", serverTime);
+    if (pathname === "/getDate") {
+        const name = query.name || "Guest";
+        const message = `<p style="color:blue">${messages.greeting.replace("%1", name)} ${getDate()}</p>`;
+        res.writeHead(200, { "Content-Type": "text/html" });
+        res.end(message);
+    } else if (pathname === "/writeFile") {
+        const fs = require("fs");
+        const text = query.text;
 
-        res.writeHead(200, { 'Content-Type': 'text/html' });
-        res.end(`<p style="color:blue">${message}</p>`);
-    } 
-
-    // Part C.1: Writing to a file (Appending text)
-    else if (parsedUrl.pathname === '/COMP4537/labs/3/writeFile/') {
-        const text = parsedUrl.query.text;
         if (!text) {
-            res.writeHead(400, { 'Content-Type': 'text/plain' });
-            return res.end("400 Bad Request: Missing 'text' query parameter");
+            res.writeHead(400, { "Content-Type": "text/plain" });
+            res.end("Error: No text provided to write.");
+            return;
         }
 
-        fs.appendFile('file.txt', text + '\n', (err) => {
+        fs.appendFile("file.txt", text + "\n", (err) => {
             if (err) {
-                res.writeHead(500, { 'Content-Type': 'text/plain' });
-                return res.end("500 Internal Server Error: Unable to write to file");
+                res.writeHead(500, { "Content-Type": "text/plain" });
+                res.end("Error writing to file.");
+            } else {
+                res.writeHead(200, { "Content-Type": "text/plain" });
+                res.end("Successfully wrote to file.");
             }
-            res.writeHead(200, { 'Content-Type': 'text/plain' });
-            res.end(`Text appended successfully: ${text}`);
         });
-    } 
+    } else if (pathname.startsWith("/readFile")) {
+        const fs = require("fs");
+        const filename = pathname.replace("/readFile/", "");
 
-    // Part C.2: Reading from a file
-    else if (parsedUrl.pathname === '/COMP4537/labs/3/readFile/file.txt') {
-        fs.readFile('file.txt', 'utf8', (err, data) => {
+        fs.readFile(filename, "utf8", (err, data) => {
             if (err) {
-                res.writeHead(404, { 'Content-Type': 'text/plain' });
-                return res.end("404 Not Found: file.txt does not exist");
+                res.writeHead(404, { "Content-Type": "text/plain" });
+                res.end(`Error 404: File '${filename}' not found.`);
+            } else {
+                res.writeHead(200, { "Content-Type": "text/plain" });
+                res.end(data);
             }
-            res.writeHead(200, { 'Content-Type': 'text/plain' });
-            res.end(data);
         });
-    } 
-
-    // Handle invalid routes
-    else {
-        res.writeHead(404, { 'Content-Type': 'text/plain' });
-        res.end("404 Not Found");
+    } else {
+        res.writeHead(404, { "Content-Type": "text/html" });
+        res.end("<h1>404 Not Found</h1>");
     }
 });
 
-server.listen(PORT, HOST, () => {
-    console.log(`Server running at http://${HOST}:${PORT}/`);
+// Start the server
+server.listen(PORT, () => {
+    console.log(`Server running at http://0.0.0.0:${PORT}/`);
 });
