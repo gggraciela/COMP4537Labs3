@@ -11,7 +11,7 @@ const server = http.createServer((req, res) => {
     const query = parsedUrl.query;
 
     if (pathname.toLowerCase().includes("getdate") && query.name) {
-        const responseMessage = `<p style="color:blue;">${messages.greeting.replace("%1", query.name)} ${getDate()}</p>`;
+        const responseMessage = `<p style="color:blue;">${messages.greeting.replace("%1", query.name).replace("%2", getDate())}</p>`;
         res.writeHead(200, { "Content-Type": "text/html" });
         res.end(responseMessage);
     } else {
