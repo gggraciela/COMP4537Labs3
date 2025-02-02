@@ -10,7 +10,7 @@ const server = http.createServer((req, res) => {
     const pathname = parsedUrl.pathname;
     const query = parsedUrl.query;
 
-    if (pathname === "/getDate" && query.name) {
+    if (pathname.toLowerCase().includes("getdate") && query.name) {
         const responseMessage = `<p style="color:blue;">${messages.greeting.replace("%1", query.name)} ${getDate()}</p>`;
         res.writeHead(200, { "Content-Type": "text/html" });
         res.end(responseMessage);
