@@ -3,7 +3,7 @@ const url = require("url");
 const getDate = require("./modules/utils").getDate;
 const messages = require("./lang/en/en");
 
-const PORT = process.env.PORT || 3000; // Use Render's assigned port or default to 3000
+const PORT = process.env.PORT || 10000; // Use Render's assigned port or default to 3000
 
 const server = http.createServer((req, res) => {
     const parsedUrl = url.parse(req.url, true);
