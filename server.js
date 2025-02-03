@@ -14,9 +14,10 @@ const server = http.createServer((req, res) => {
 
     // Handle GET request for /getDate
     if (pathname.toLowerCase().includes("getdate") && query.name) {
-        const responseMessage = `<p style="color:blue;">${messages.greeting.replace("%1", query.name).replace("%2", getDate())}</p>`;
+        const name = query.name || "Guest";
+        const message = <p style="color:blue">${messages.greeting.replace("%1", name)} ${getDate()}</p>;
         res.writeHead(200, { "Content-Type": "text/html" });
-        res.end(responseMessage);
+        res.end(message);
     } 
     // Handle GET request for /writeFile
     else if (pathname.toLowerCase().includes("writefile") && query.text) {
