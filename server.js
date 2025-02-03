@@ -14,7 +14,7 @@ const server = http.createServer((req, res) => {
 
     // Handle GET request for /getDate
     if (pathname.toLowerCase().includes("getdate") && query.name) {
-        const responseMessage = `<p style="color:blue;">${messages.greeting.replace("%1", query.name)} ${getDate()}</p>`;
+        const responseMessage = `<p style="color:blue;">${messages.greeting.replace("%1", query.name).replace("%2", getDate())}</p>`;
         res.writeHead(200, { "Content-Type": "text/html" });
         res.end(responseMessage);
     } 
@@ -22,13 +22,19 @@ const server = http.createServer((req, res) => {
     else if (pathname.toLowerCase().includes("writefile") && query.text) {
         const filePath = path.join(__dirname, "file.txt");
 
-        fs.appendFile(filePath, `${query.text}\n`, (err) => {
+        if (!query.text) {
+            res.writeHead(400, { "Content-Type": "text/plain" });
+            res.end("Error: No text provided to write.");
+            return;
+        }
+
+        fs.appendFile(filePath, query.text + "\n", (err) => {
             if (err) {
                 res.writeHead(500, { "Content-Type": "text/plain" });
-                res.end("Error writing to file");
+                res.end("Error writing to file.");
             } else {
                 res.writeHead(200, { "Content-Type": "text/plain" });
-                res.end("Successfully wrote to file");
+                res.end("Successfully wrote to file.");
             }
         });
     } 
@@ -38,7 +44,7 @@ const server = http.createServer((req, res) => {
 
         fs.readFile(filePath, "utf8", (err, data) => {
             if (err) {
-                res.writeHead(500, { "Content-Type": "text/plain" });
+                res.writeHead(404, { "Content-Type": "text/plain" });
                 res.end("Error reading file");
             } else {
                 res.writeHead(200, { "Content-Type": "text/plain" });
