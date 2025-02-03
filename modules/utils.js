@@ -1,3 +1,3 @@
 module.exports = {
-  getDate: () => new Date().toUTCString()  // Use UTC time to avoid time zone issues
+  getDate: () => new Date().toLocaleString()  // Get local time as a string
 };
