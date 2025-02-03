@@ -2,8 +2,8 @@ const http = require("http");
 const url = require("url");
 const fs = require("fs");
 const path = require("path");
-const getDate = require("./modules/utils").getDate;
-const messages = require("./lang/en/en");
+const getDate = require("./modules/utils").getDate; // Import the getDate function
+const messages = require("./lang/en/en"); // Import user-facing messages
 
 const PORT = process.env.PORT || 10000; // Use Render's assigned port or default to 10000
 
