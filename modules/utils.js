@@ -1,24 +1,24 @@
+const moment = require('moment-timezone');
+
 module.exports = {
   getDate: () => {
-    const date = new Date();
-    
+    const date = moment.tz("America/Los_Angeles"); // Use the Pacific Time Zone
+
     // Get the day, month, date, year, and time in the desired format
-    const day = date.toLocaleString('en-US', { weekday: 'short' }); // Abbreviated weekday (e.g., "Wed")
-    const month = date.toLocaleString('en-US', { month: 'short' }); // Abbreviated month (e.g., "Sept")
-    const dayOfMonth = date.getDate(); // Day of the month (e.g., "1")
-    const year = date.getFullYear(); // Full year (e.g., "2023")
-    const time = date.toLocaleTimeString(); // Time (e.g., "12:52:14")
+    const day = date.format('ddd'); // Abbreviated weekday (e.g., "Wed")
+    const month = date.format('MMM'); // Abbreviated month (e.g., "Sept")
+    const dayOfMonth = date.format('DD'); // Day of the month (e.g., "01")
+    const year = date.format('YYYY'); // Full year (e.g., "2023")
+    const time = date.format('hh:mm:ss A'); // Time (e.g., "12:52:14 PM")
 
-    // Calculate the offset in minutes, then convert to hours
-    const timeZoneOffset = date.getTimezoneOffset() / 60; // Offset in hours (positive is east of GMT, negative is west)
+    // Get the time zone offset and convert it to the format GMT-0800
+    const timeZoneOffset = date.utcOffset() / 60; // Offset in hours
+    const formattedOffset = `GMT${timeZoneOffset < 0 ? '-' : '+'}${Math.abs(timeZoneOffset) < 10 ? '0' : ''}${Math.abs(timeZoneOffset)}00`;
 
-    // Format the offset to match the desired format (e.g., "GMT-0800" or "GMT-0700" depending on DST)
-    const formattedOffset = `GMT${timeZoneOffset <= 0 ? '+' : ''}${timeZoneOffset < 10 && timeZoneOffset > -10 ? '0' : ''}${timeZoneOffset}00`;
-
-    // Get the time zone abbreviation (e.g., "Pacific Standard Time")
-    const timeZone = date.toString().match(/\((.*)\)/)[1];
+    // Get the time zone abbreviation (e.g., "PST")
+    const timeZone = date.format('z');
 
     // Return the formatted string as requested
-    return `${day} ${month} ${dayOfMonth < 10 ? '0' : ''}${dayOfMonth} ${year} ${time} ${formattedOffset} (${timeZone})`;
+    return `${day} ${month} ${dayOfMonth} ${year} ${time} ${formattedOffset} (${timeZone})`;
   }
 };
