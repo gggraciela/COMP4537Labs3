@@ -8,10 +8,17 @@ module.exports = {
     const dayOfMonth = date.getDate(); // Day of the month (e.g., "1")
     const year = date.getFullYear(); // Full year (e.g., "2023")
     const time = date.toLocaleTimeString(); // Time (e.g., "12:52:14")
-    const timeZoneOffset = -date.getTimezoneOffset() / 60; // GMT offset (e.g., "-08")
-    const timeZone = date.toString().match(/\((.*)\)/)[1]; // Extracts the time zone abbreviation (e.g., "Pacific Standard Time")
-    
+
+    // Calculate the offset in hours for the local time zone (in minutes), then convert to hours
+    const timeZoneOffset = -date.getTimezoneOffset() / 60; // Time zone offset in hours (e.g., -8 for Pacific Time)
+
+    // Format the offset to match the desired format (GMT-0800 or GMT-0700 depending on DST)
+    const formattedOffset = `GMT${timeZoneOffset >= 0 ? '+' : ''}${timeZoneOffset < 10 ? '0' : ''}${timeZoneOffset}00`;
+
+    // Get the time zone abbreviation (e.g., "Pacific Standard Time")
+    const timeZone = date.toString().match(/\((.*)\)/)[1];
+
     // Return the formatted string as requested
-    return `${day} ${month} ${dayOfMonth < 10 ? '0' : ''}${dayOfMonth} ${year} ${time} GMT${timeZoneOffset < 0 ? timeZoneOffset : `+${timeZoneOffset}`}00 (${timeZone})`;
+    return `${day} ${month} ${dayOfMonth < 10 ? '0' : ''}${dayOfMonth} ${year} ${time} ${formattedOffset} (${timeZone})`;
   }
 };
